@@ -107,14 +107,13 @@ int main() {
     BEGIN_TEST(tm2, "BasicSearch",
                "Search for all n elements present in the array.");
     // DISABLE();
-    //  std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
-    std::array<value_type, 8> arr{-2, 0, 1, 2, 4, 5, 9, 12};
+    std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
 
     // Looking for each element from arr in arr.
     for (const auto &e : arr) {
       auto result = bsearch(arr.begin(), arr.end(), e);
       EXPECT_EQ(*result, e);
-      // EXPECT_EQ(e - 1, std::distance(arr.begin(), result));
+      EXPECT_EQ(e - 1, std::distance(arr.begin(), result));
     }
   }
   {
@@ -685,7 +684,7 @@ int main() {
 
     // Looking for each element from arr in arr.
     for (const auto &e : arr) {
-      auto *result = bsearch_rec(arr.begin(), arr.end(), e);
+      auto *result = bsearch(arr.begin(), arr.end(), e);
       EXPECT_EQ(*result, e);
       EXPECT_EQ(e - 1, std::distance(arr.begin(), result));
     }
@@ -699,7 +698,7 @@ int main() {
     std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
 
     auto target{-4};
-    auto result = bsearch_rec(arr.begin(), arr.end(), target);
+    auto result = bsearch(arr.begin(), arr.end(), target);
     EXPECT_EQ(result, arr.end());
   }
 
@@ -712,7 +711,7 @@ int main() {
     std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
 
     auto target{10};
-    auto result = bsearch_rec(arr.begin(), arr.end(), target);
+    auto result = bsearch(arr.begin(), arr.end(), target);
     EXPECT_EQ(result, arr.end());
   }
 
@@ -725,7 +724,7 @@ int main() {
     std::array<value_type, 6> arr{1, 3, 5, 7, 9, 11};
 
     for (auto i{2}; i < 11; i += 2) {
-      auto result = bsearch_rec(arr.begin(), arr.end(), i);
+      auto result = bsearch(arr.begin(), arr.end(), i);
       EXPECT_EQ(result, arr.end());
     }
   }
@@ -739,7 +738,7 @@ int main() {
     // Let us simulate an empty range here.
     auto first = arr.begin();
     auto last = arr.begin();
-    auto result = bsearch_rec(first, last, 10);
+    auto result = bsearch(first, last, 10);
     EXPECT_EQ(result, last);
   }
 

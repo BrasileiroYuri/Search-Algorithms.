@@ -37,6 +37,12 @@ value_type *ubound(value_type *first, value_type *last, value_type value);
 
 /// Ternary search.
 value_type *tsearch(value_type *first, value_type *last, value_type value);
+
+// Bonus: eu quero fazer os algoritmos de busca abaixo.
+/// Interpolation search
+value_type *isearch(value_type *first, value_type *last, value_type value);
+/// Exponential search
+value_type *esearch(value_type *first, value_type *last, value_type value);
 } // namespace sa
 
 #endif // SEARCHING_H
