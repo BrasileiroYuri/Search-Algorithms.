@@ -888,7 +888,140 @@ int main() {
     EXPECT_EQ(result, last);
   }
 
+  {
+    //=== Test #6
+    BEGIN_TEST(tm7, "SingleElement",
+               "Busca em um array com apenas um elemento.");
+    std::array<value_type, 1> arr{42};
+    // Como o array possui somente um elemento, espera-se que se busque esse
+    // elemento.
+    auto result = isearch(arr.begin(), arr.end(), 42);
+    EXPECT_EQ(*result, 42);
+  }
+
+  {
+    //=== Test #7
+    BEGIN_TEST(tm7, "TwoElements", "Busca em um array com dois elementos.");
+    std::array<value_type, 2> arr{10, 20};
+
+    // Buscando o primeiro elemento:
+    auto result1 = isearch(arr.begin(), arr.end(), 10);
+    EXPECT_EQ(*result1, 10);
+
+    // Buscando o segundo elemento:
+    auto result2 = isearch(arr.begin(), arr.end(), 20);
+    EXPECT_EQ(*result2, 20);
+
+    // Buscando um valor que não existe (deve retornar arr.end()):
+    auto result3 = isearch(arr.begin(), arr.end(), 15);
+    EXPECT_EQ(result3, arr.end());
+  }
+
+  {
+    //=== Test #8
+    BEGIN_TEST(tm7, "NonUniformDistribution",
+               "Busca em um array ordenado que não está em PA perfeita.");
+    // Neste array os intervalos entre os elementos não são constantes:
+    // Diferenças: 1, 2, 3, 4, 5.
+    std::array<value_type, 6> arr{1, 2, 4, 7, 11, 16};
+
+    // Apesar de não estar em PA exata, a função isearch pode localizar
+    // os valores que coincidirem com os presentes no array.
+    auto result_first = isearch(arr.begin(), arr.end(), 1);
+    EXPECT_EQ(*result_first, 1);
+
+    auto result_middle = isearch(arr.begin(), arr.end(), 7);
+    EXPECT_EQ(*result_middle, 7);
+
+    auto result_last = isearch(arr.begin(), arr.end(), 16);
+    EXPECT_EQ(*result_last, 16);
+  }
+
+  {
+    //=== Test #9
+    BEGIN_TEST(
+        tm7, "ValueOutsideNonUniform",
+        "Busca por um valor ausente em um array ordenado não uniformemente.");
+    std::array<value_type, 6> arr{1, 2, 4, 7, 11, 16};
+
+    // Buscando um valor que não existe. Neste caso, espera-se que o retorno
+    // seja arr.end()
+    auto result = isearch(arr.begin(), arr.end(), 5);
+    EXPECT_EQ(result, arr.end());
+  }
   tm7.summary();
+  std::cout << std::endl;
+
+  TestManager tm8{"Exponential Search Test Suite"};
+
+  {
+    //=== Test #1
+    BEGIN_TEST(tm8, "BasicSearch",
+               "Search for all n elements present in the array.");
+    // DISABLE();
+    std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
+
+    // Looking for each element from arr in arr.
+    for (const auto &e : arr) {
+      auto result = esearch(arr.begin(), arr.end(), e);
+      EXPECT_EQ(*result, e);
+      EXPECT_EQ(e - 1, std::distance(arr.begin(), result));
+    }
+  }
+  {
+    //=== Test #2
+    BEGIN_TEST(tm8, "NotPresentToLeft",
+               "Search for an element that is not present, whose value is "
+               "smaller than the first element of the array.");
+    // DISABLE();
+    std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
+
+    auto target{-4};
+    auto result = esearch(arr.begin(), arr.end(), target);
+    EXPECT_EQ(result, arr.end());
+  }
+
+  {
+    //=== Test #3
+    BEGIN_TEST(tm8, "NotPresentToRight",
+               "Search for an element that is not present, whose value is "
+               "greater than the last element of the array.");
+    // DISABLE();
+    std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
+
+    auto target{10};
+    auto result = esearch(arr.begin(), arr.end(), target);
+    EXPECT_EQ(result, arr.end());
+  }
+
+  {
+    //=== Test #4
+    BEGIN_TEST(tm8, "NotPresentInBetween",
+               "Search for an element that is not present, whose value is "
+               "between the first and the last elements of the array.");
+    // DISABLE();
+    std::array<value_type, 6> arr{1, 3, 5, 7, 9, 11};
+
+    for (auto i{2}; i < 11; i += 2) {
+      auto result = esearch(arr.begin(), arr.end(), i);
+      EXPECT_EQ(result, arr.end());
+    }
+  }
+
+  {
+    //=== Test #5
+    BEGIN_TEST(tm8, "EmptyRange", "Search for an element on an empty range.");
+    // DISABLE();
+    std::array<value_type, 6> arr{1, 3, 5, 7, 9, 11};
+
+    // Let us simulate an empty range here.
+    auto first = arr.begin();
+    auto last = arr.begin();
+    auto result = esearch(first, last, 10);
+    EXPECT_EQ(result, last);
+  }
+
+  tm8.summary();
   std::cout << std::endl;
 
   return EXIT_SUCCESS;

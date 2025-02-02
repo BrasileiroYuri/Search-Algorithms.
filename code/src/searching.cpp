@@ -168,8 +168,11 @@ value_type *ubound(value_type *first, value_type *last, value_type value) {
 }
 
 value_type *tsearch(value_type *first, value_type *last, value_type value) {
+
   value_type *backup_last{last}, *mid_l, *mid_r;
+
   while (first != last) {
+
     mid_l = first + (last - first) / 3;
     mid_r = mid_l + (last - first) / 3;
 
@@ -188,8 +191,41 @@ value_type *tsearch(value_type *first, value_type *last, value_type value) {
       return mid_l;
     }
   }
+
   return backup_last;
 }
+/**
+ * @brief Função auxiliar para isearch que calcula o índice esperado de 'value'
+ *
+ * @details Essa função se baseia em conceitos de funções lineares. Isso pois
+ * quando temos um conjunto de dados uniformemente distruídos podemos
+ * escrevê-los como uma função linear da forma 'T + i * R', onde 'T' é o termo
+ * inicial, 'i' o índice - começando em 0 - e 'R' a razão.
+ * O outro conceito, que define a variável r abaixo é o de razão de progressão
+ * aritmética: (último elemento - primeiro elemento) / (quantidade de elementos
+ * - 1). Assim teremos a razão exata ou aproximada, se os dados não estiverem em
+ * PA.
+ *
+ * @param first Ponteiro para o início do array.
+ * @param last Ponteiro para uma posição após o último elemento do array.
+ * @param value Valor procurado.
+ *
+ * @return Indice do local onde é esperado que 'value' esteja.
+ */
+value_type index(value_type *first, value_type *last, value_type value) {
+
+  value_type den = last - first - 1;
+  value_type r = (*std::prev(last) - *first) / den;
+
+  // Caso que temos apenas um elemento, ai prev(last) == first e o numerador
+  // acima fica 0.
+  if (r == 0) {
+    return -1;
+  }
+
+  return (value - *first) / r;
+}
+
 /**
  * @brief Interpolation search.
  *
@@ -209,17 +245,16 @@ value_type *isearch(value_type *first, value_type *last, value_type value) {
 
   while (first != last) {
 
-    value_type diff1 = value - *first;
-    value_type diff2 = *std::prev(last) - *first;
-
-    if (diff2 == 0) {
-      return backup_last;
+    // Intervalo com apenas um elemento já verifico.
+    if (std::distance(first, last) == 1) {
+      return (*first == value) ? first : backup_last;
     }
 
-    value_type proportion = diff1 / diff2;
-    value_type off_set = proportion * (last - first - 1);
-    value_type *position = first + off_set;
+    value_type off_set = index(first, last, value);
+    if (off_set == -1)
+      return backup_last;
 
+    value_type *position = first + off_set;
     if (*position == value) {
       return position;
     } else if (*position < value) {
@@ -228,15 +263,17 @@ value_type *isearch(value_type *first, value_type *last, value_type value) {
       last = position;
     }
   }
-
   return backup_last;
 }
-
 /**
  * @brief Exponential search.
  *
  * @details A busca exponencial é um bom algoritmo para grandes volumes de
  * dados. Tem complexidade semelhante a busca binária, do qual ele faz uso.
+ * Curiosamente, podemos implementar "avançando" first e parando quando value
+ * for menor que *first, ou "voltando" last até value ser maior que *last. Isso
+ * faz sentido quando supomos que o target esteja mais à direita ou à esquerda
+ * do array.
  *
  * @param first Ponteiro para o início do array.
  * @param last Ponteiro para uma posição após o último elemento do array.
@@ -246,6 +283,19 @@ value_type *isearch(value_type *first, value_type *last, value_type value) {
  * encontrado.
  */
 value_type *esearch(value_type *first, value_type *last, value_type value) {
-  return last;
+
+  value_type off_set{1};
+  auto size{last - first};
+
+  while (off_set < size and value > *(first + off_set)) {
+    off_set *= 2;
+  }
+
+  value_type *new_last = first + off_set < last ? first + off_set : last;
+
+  auto result = bsearch(first + off_set / 2, new_last, value);
+
+  return *result == value ? result : last;
 }
+
 } // namespace sa
