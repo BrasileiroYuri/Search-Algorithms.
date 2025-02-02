@@ -136,7 +136,15 @@ value_type *bsearch_rec(value_type *first, value_type *last, value_type value) {
  * \param value The value we are looking for.
  */
 value_type *lbound(value_type *first, value_type *last, value_type value) {
-  return last;
+  while (first != last) {
+    value_type *mid = first + (last - first) / 2;
+    if (*mid >= value) {
+      last = mid;
+    } else {
+      first = mid + 1;
+    }
+  }
+  return first;
 }
 
 /*!
@@ -148,24 +156,15 @@ value_type *lbound(value_type *first, value_type *last, value_type value) {
  * \param value The value we are looking for.
  */
 value_type *ubound(value_type *first, value_type *last, value_type value) {
-  value_type *backup_last{last}, *mid;
   while (first != last) {
-    mid = first + (last - first) / 2;
+    value_type *mid = first + (last - first) / 2;
     if (*mid > value) {
-      if (*std::prev(mid) > value) {
-        last = mid;
-      } else {
-        return mid;
-      }
-    } else if (*mid <= value) {
-      if (*std::next(mid) > value) {
-        return std::next(mid);
-      } else {
-        first = mid + 1;
-      }
+      last = mid;
+    } else {
+      first = mid + 1;
     }
   }
-  return backup_last;
+  return first;
 }
 
 value_type *tsearch(value_type *first, value_type *last, value_type value) {
@@ -194,8 +193,9 @@ value_type *tsearch(value_type *first, value_type *last, value_type value) {
 /**
  * @brief Interpolation search.
  *
- * @details A busca por interpolação em arrays ordenandos uniformemente (em
- * progressão aritmética) tem complexidade O(log(logN*)).
+ * @details Esse algoritmo é interessante pois a busca por interpolação em
+ * arrays ordenados uniformemente (em progressão aritmética) tem complexidade
+ * O(log(logN)).
  *
  * @param first Ponteiro para o início do array.
  * @param last Ponteiro para uma posição após o último elemento do array.
@@ -205,7 +205,31 @@ value_type *tsearch(value_type *first, value_type *last, value_type value) {
  * encontrado.
  */
 value_type *isearch(value_type *first, value_type *last, value_type value) {
-  return last;
+  value_type *backup_last{last};
+
+  while (first != last) {
+
+    value_type diff1 = value - *first;
+    value_type diff2 = *std::prev(last) - *first;
+
+    if (diff2 == 0) {
+      return backup_last;
+    }
+
+    value_type proportion = diff1 / diff2;
+    value_type off_set = proportion * (last - first - 1);
+    value_type *position = first + off_set;
+
+    if (*position == value) {
+      return position;
+    } else if (*position < value) {
+      first = position + 1;
+    } else {
+      last = position;
+    }
+  }
+
+  return backup_last;
 }
 
 /**

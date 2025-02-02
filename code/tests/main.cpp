@@ -819,5 +819,77 @@ int main() {
   tm6.summary();
   std::cout << std::endl;
 
+  TestManager tm7{"Interpolation Search Test Suite"};
+
+  {
+    //=== Test #1
+    BEGIN_TEST(tm7, "BasicSearch",
+               "Search for all n elements present in the array.");
+    // DISABLE();
+    std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
+
+    // Looking for each element from arr in arr.
+    for (const auto &e : arr) {
+      auto result = isearch(arr.begin(), arr.end(), e);
+      EXPECT_EQ(*result, e);
+      EXPECT_EQ(e - 1, std::distance(arr.begin(), result));
+    }
+  }
+  {
+    //=== Test #2
+    BEGIN_TEST(tm7, "NotPresentToLeft",
+               "Search for an element that is not present, whose value is "
+               "smaller than the first element of the array.");
+    // DISABLE();
+    std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
+
+    auto target{-4};
+    auto result = isearch(arr.begin(), arr.end(), target);
+    EXPECT_EQ(result, arr.end());
+  }
+
+  {
+    //=== Test #3
+    BEGIN_TEST(tm7, "NotPresentToRight",
+               "Search for an element that is not present, whose value is "
+               "greater than the last element of the array.");
+    // DISABLE();
+    std::array<value_type, 7> arr{1, 2, 3, 4, 5, 6, 7};
+
+    auto target{10};
+    auto result = isearch(arr.begin(), arr.end(), target);
+    EXPECT_EQ(result, arr.end());
+  }
+
+  {
+    //=== Test #4
+    BEGIN_TEST(tm7, "NotPresentInBetween",
+               "Search for an element that is not present, whose value is "
+               "between the first and the last elements of the array.");
+    // DISABLE();
+    std::array<value_type, 6> arr{1, 3, 5, 7, 9, 11};
+
+    for (auto i{2}; i < 11; i += 2) {
+      auto result = isearch(arr.begin(), arr.end(), i);
+      EXPECT_EQ(result, arr.end());
+    }
+  }
+
+  {
+    //=== Test #5
+    BEGIN_TEST(tm7, "EmptyRange", "Search for an element on an empty range.");
+    // DISABLE();
+    std::array<value_type, 6> arr{1, 3, 5, 7, 9, 11};
+
+    // Let us simulate an empty range here.
+    auto first = arr.begin();
+    auto last = arr.begin();
+    auto result = isearch(first, last, 10);
+    EXPECT_EQ(result, last);
+  }
+
+  tm7.summary();
+  std::cout << std::endl;
+
   return EXIT_SUCCESS;
 }
