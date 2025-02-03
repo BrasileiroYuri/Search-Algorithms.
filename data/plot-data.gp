@@ -1,41 +1,30 @@
-# =================================
-# Define title and axis for the plot
-# ---------------------------------
-set title "Algorithms Runtime" font ", 32"
-set title offset 0,-0.95
-set xlabel "Array size (number of elements)" font "helvetica, 24"
-set xlabel offset 0,-1.8
-set ylabel "Running time (in miliseconds)" font "helvetica, 24"
-set ylabel offset +1.8,0
+set terminal pngcairo size 1280,720 enhanced font 'Arial,14'
+set output 'busca_comparacao.png'
 
-# =================================
-# Line style definition
-# ---------------------------------
-set style line 1 lt 4 lw 3 dt 2
-set style line 2 lt 3 lw 2
-set style line 3 lc rgb 'red' dt 2 lt 1 lw 2
-set style line 4 lc rgb 'black' dt 1 lt 1 lw 2
-set style line 5 lc rgb 'blue' dt 2 lt 1 lw 2
+# Melhorando os rótulos e título
+set title 'Comparação de Algoritmos de Busca (Pior Caso)' font ',16'
+set xlabel 'Tamanho do Array' font ',14'
+set ylabel 'Tempo (microssegundos)' font ',14'
 
-# =================================
-# Choose where the output should be sent to.
-# In this case, we send it to a PNG image.
-# ---------------------------------
-set terminal png size 1920,1080
-set o 'running_time.png'
+# Ajustando escala logarítmica para melhor visualização
+set logscale x 10
+set logscale y 10
+set format y "10^%T"
 
-# =================================
-# Plot curves and outher stuff
-# ---------------------------------
-set grid                 # Do we want a grid?
-set key top left         # Location of the keys
-set logscale y           # Use this if the curves are in different scale
-set xrange [0:260000]    # Define range of X values to consider.
-#set yrange [0:26]        # Define range of Y values to consider
+# Adicionando grid para melhor leitura
+set grid
 
-# Finally, this is the plot command
-plot 'timing-data.txt' u 1:2 title 'Algorithm #1 data' w lp ls 3, \
-     'timing-data.txt' u 1:3 title 'Algorithm #2 data' w lp ls 5
+# Limitando o eixo Y para evitar ruídos extremos (ajuste conforme necessário)
+set yrange [100:1e6]
 
-# Go back to interactive terminal
-set out
+# Melhorando a posição da legenda
+set key outside right top font ',12'
+
+# Plotando os dados suavizados e reduzindo densidade de pontos
+plot  'data/data_1000.txt' using 1:3 smooth unique with lines lw 2 title 'BSearch' linecolor rgb "orange", \
+     'data/data_1000.txt' using 1:4 smooth unique with lines lw 2 title 'BSearchRec' linecolor rgb "green", \
+     'data/data_1000.txt' using 1:5 smooth unique with lines lw 2 title 'LBound' linecolor rgb "red", \
+     'data/data_1000.txt' using 1:6 smooth unique with lines lw 2 title 'UBound' linecolor rgb "purple", \
+     'data/data_1000.txt' using 1:7 smooth unique with lines lw 2 title 'TSearch' linecolor rgb "brown", \
+     'data/data_1000.txt' using 1:8 smooth unique with lines lw 2 title 'ISearch' linecolor rgb "black", \
+     'data/data_1000.txt' using 1:9 smooth unique with lines lw 2 title 'ESearch' linecolor rgb "gray"
