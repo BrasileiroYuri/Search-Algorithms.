@@ -20,7 +20,8 @@ namespace sa {
  * \param value The value we are looking for.
  */
 value_type *lsearch(value_type *first, value_type *last, value_type value) {
-
+ 
+  
   while (first != last) {
     if (*first++ == value) {
       return std::prev(first);

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <map>
 #include <numeric>
+#include <unordered_map>
 #include <vector>
 
 #include "searching.h"
@@ -21,7 +22,7 @@ using sa::value_type;
 using TestFunction = value_type *(*)(value_type *first, value_type *last,
                                      value_type value);
 
-std::map<TestFunction, std::string> func_names = {
+std::unordered_map<TestFunction, std::string> func_names = {
     {sa::lsearch, "LSearch"},         {sa::bsearch, "BSearch"},
     {sa::bsearch_rec, "BSearch_Rec"}, {sa::tsearch, "TSearch"},
     {sa::lbound, "LBound"},           {sa::ubound, "UBound"},
